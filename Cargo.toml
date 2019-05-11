@@ -1,0 +1,9 @@
+[package]
+name = "dominions-5-draftgen"
+version = "0.1.0"
+authors = ["David McGillicuddy <contact@djmcgill.co.uk>"]
+edition = "2018"
+license = "GPLv3"
+
+[dependencies]
+simple-error = "0.1.*"
