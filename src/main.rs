@@ -1,16 +1,14 @@
 use std::env;
-use std::path::Path;
 use std::process::exit;
 use std::collections::HashMap;
 use std::collections::hash_map::Entry;
-use std::fs::File;
-use std::io::{BufReader, BufRead};
 use std::error::Error;
 
-use simple_error::*;
+use simple_error::SimpleError;
 
-const FORT_LEADER_FILE: &'static str = "gamedata/fort_leader_types_by_nation.tsv";
-const FORT_TROOP_FILE: &'static str = "gamedata/fort_troop_types_by_nation.tsv";
+// Parsing these on start up feels kinda bad and unnecessary
+const FORT_LEADER_FILE_CONTENTS: &'static str = include_str!("../gamedata/fort_leader_types_by_nation.tsv");
+const FORT_TROOP_FILE_CONTENTS: &'static str = include_str!("../gamedata/fort_troop_types_by_nation.tsv");
 
 fn main() -> Result<(), Box<Error>> {
     let args: Vec<String> = env::args().collect();
@@ -19,46 +17,31 @@ fn main() -> Result<(), Box<Error>> {
         println!("CURRENT USAGE: just 3 args - base nation, then commanders, then troops");
         exit(-1);
     }
-    let base_nation_id = try_with!(
-        args[1].parse::<usize>(),
-        "Could not parse base_nation_id"
-    );
-    let commander_nation_id = try_with!(
-        args[2].parse::<usize>().unwrap(),
-        "Could not parse commander_nation_id"
-    );
-    let troops_nation_id = try_with!(
-        args[3].parse::<usize>().unwrap(),
-        "Could not parse troops_nation_id"
-    );
+    let base_nation_id = args[1].parse::<usize>()?;
+    let commander_nation_id = args[2].parse::<usize>()?;
+    let troops_nation_id = args[3].parse::<usize>()?;
 
-    let fort_commanders = try_with!(
-        load_monsters_by_nation_from_file(FORT_LEADER_FILE)
-        "Could not load file {}", FORT_LEADER_FILE
-    );
 
-    let fort_commanders_text = try_with!(
+    let fort_commanders =
+        load_monsters_by_nation_from_file(FORT_LEADER_FILE_CONTENTS)?;
+
+
+    let fort_commanders_text =
         entries_by_line_with_prefix(
-            "#addreccom ",
-            commander_nation_id,
-            &fort_commanders,
-        ),
-        "Could not generate text from fort_commanders data"
-    );
+        "#addreccom ",
+        commander_nation_id,
+        &fort_commanders,
+    )?;
 
-    let fort_units = try_with!(
-        load_monsters_by_nation_from_file(FORT_TROOP_FILE),
-        "Could not load file {}", FORT_TROOP_FILE
-    );
+    let fort_units =
+        load_monsters_by_nation_from_file(FORT_TROOP_FILE_CONTENTS)?;
 
-    let fort_unit_text = try_with!(
+    let fort_unit_text =
         entries_by_line_with_prefix(
-            "#addrecunit ",
-            troops_nation_id,
-            &fort_units,
-        ),
-        "Could not generate text from fort_troops data"
-    );
+        "#addrecunit ",
+        troops_nation_id,
+        &fort_units,
+    )?;
 
     println!("
 #modname \"dumb draft mod\"
@@ -87,17 +70,13 @@ fn entries_by_line_with_prefix(prefix: &str, key: usize, hash_map: &HashMap<usiz
     Ok(text)
 }
 
-fn load_monsters_by_nation_from_file<P: AsRef<Path>>(path: P) -> Option<HashMap<usize, Vec<usize>>> {
+fn load_monsters_by_nation_from_file(file_contents: &'static str) -> Result<HashMap<usize, Vec<usize>>, Box<Error>> {
     let mut hash_map: HashMap<usize, Vec<usize>> = HashMap::new();
-    let file = File::open(path).unwrap_or_else(|_| {
-        panic!("COULD NOT OPEN FILE");
-    });
 
-    let mut line_reader = BufReader::new(file).lines();
+    let mut line_reader = file_contents.lines();
     let _ = line_reader.next().unwrap(); // skip heading
     for line in line_reader {
-        let actual_line = line.unwrap();
-        let mut fields = actual_line.split('\t');
+        let mut fields = line.split('\t');
         let monster_number = fields.next().unwrap().parse::<usize>().unwrap();
         let nation_id = fields.next().unwrap().parse::<usize>().unwrap();
         let entry = hash_map.entry(
@@ -112,5 +91,5 @@ fn load_monsters_by_nation_from_file<P: AsRef<Path>>(path: P) -> Option<HashMap<
             }
         };
     }
-    Some(hash_map)
+    Ok(hash_map)
 }
