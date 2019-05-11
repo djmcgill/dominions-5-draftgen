@@ -23,7 +23,36 @@ cargo run -- <base_nation> <commander_nation> <troop_nation>
 
 # e.g. cargo run -- 83 47 47
 ```
-Then save the output into a file with a .dm extension and drop it into your dominions 5 mods folder (for windows users that's %APPDATA%/dominions5/mods).
+Then save the output into a file with a .dm extension and drop it into your dominions 5 mods folder (for windows users that's `%APPDATA%/Dominions5/mods`).
+
+#### Example Output:
+```
+#modname "dumb draft mod"
+#selectnation 83
+#clearrec
+
+#addreccom 56
+#addreccom 54
+#addreccom 60
+#addreccom 658
+#addreccom 151
+#addreccom 152
+
+
+#addrecunit 1
+#addrecunit 2127
+#addrecunit 61
+#addrecunit 62
+#addrecunit 53
+#addrecunit 59
+#addrecunit 63
+#addrecunit 2129
+#addrecunit 57
+
+
+#end
+#end
+```
 
 ## TODO
 - More types of recruitment
