@@ -4,13 +4,13 @@
 name = "dominions-5-draftgen"
 version = "0.1.0"
 dependencies = [
- "simple-error 0.1.13 (registry+https://github.com/rust-lang/crates.io-index)",
+ "simple-error 0.2.0 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
 [[package]]
 name = "simple-error"
-version = "0.1.13"
+version = "0.2.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 
 [metadata]
-"checksum simple-error 0.1.13 (registry+https://github.com/rust-lang/crates.io-index)" = "c00e871264295428089fb278c4b225be3ca92c227c918857f2e562bac973257b"
+"checksum simple-error 0.2.0 (registry+https://github.com/rust-lang/crates.io-index)" = "30dec844a00c634b23676fa33f9833610148e13fbd679ec5ecce11d25fb1d213"
