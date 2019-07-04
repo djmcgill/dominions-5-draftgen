@@ -6,4 +6,4 @@ edition = "2018"
 license = "GPLv3"
 
 [dependencies]
-simple-error = "0.1.*"
+simple-error = "0.2.*"
